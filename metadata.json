@@ -1,0 +1,6 @@
+{
+  "name": "ConsignLedger",
+  "description": "Sistema integral de control de conciliación de inventario y mercancía en consignación para distribuidores y puntos de venta.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
