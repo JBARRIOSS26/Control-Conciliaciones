@@ -53,13 +53,13 @@ import {
 import { CheckCircle2, CloudCheck } from 'lucide-react';
 
 export default function App() {
-  // Authentication State
+  // Authentication State (Starts at null to mandate login unless session exists)
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
       const saved = localStorage.getItem('consignledger_auth_user');
-      return saved ? JSON.parse(saved) : DEFAULT_USERS[0];
+      return saved ? JSON.parse(saved) : null;
     } catch {
-      return DEFAULT_USERS[0];
+      return null;
     }
   });
 
