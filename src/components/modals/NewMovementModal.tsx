@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { X, Plus, ArrowLeftRight, Truck, CheckCircle, PackageMinus, Scale, Check } from 'lucide-react';
 import { Client, Product, MovementType } from '../../types';
+import { UserPermissions } from '../../utils/permissions';
 
 interface NewMovementModalProps {
   isOpen: boolean;
   onClose: () => void;
   clients: Client[];
   products: Product[];
+  permissions?: UserPermissions;
   onConfirmNewMovement: (data: {
     type: MovementType;
     clientId: string;
@@ -23,9 +25,11 @@ export const NewMovementModal: React.FC<NewMovementModalProps> = ({
   onClose,
   clients,
   products,
+  permissions,
   onConfirmNewMovement,
 }) => {
-  const [type, setType] = useState<MovementType>('entrega');
+  const defaultType: MovementType = permissions?.canDispatchConsignment ? 'entrega' : 'venta_cierre';
+  const [type, setType] = useState<MovementType>(defaultType);
   const [clientId, setClientId] = useState(clients[0]?.id || '');
   const [sku, setSku] = useState(products[0]?.sku || '');
   const [quantity, setQuantity] = useState<number>(20);
@@ -88,45 +92,51 @@ export const NewMovementModal: React.FC<NewMovementModalProps> = ({
             <label className="block text-xs font-semibold text-[#0b1c30] uppercase mb-1.5">
               Tipo de Movimiento
             </label>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setType('entrega')}
-                className={`p-2.5 rounded-lg text-xs font-semibold flex flex-col items-center gap-1 border transition-all cursor-pointer ${
-                  type === 'entrega'
-                    ? 'bg-[#eff4ff] border-[#0051d5] text-[#0051d5]'
-                    : 'bg-white border-[#e5eeff] text-[#45464d] hover:bg-[#f8f9ff]'
-                }`}
-              >
-                <Truck className="w-4 h-4" />
-                <span>Entrega (REM)</span>
-              </button>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {(!permissions || permissions.canDispatchConsignment) && (
+                <button
+                  type="button"
+                  onClick={() => setType('entrega')}
+                  className={`p-2.5 rounded-lg text-xs font-semibold flex flex-col items-center gap-1 border transition-all cursor-pointer ${
+                    type === 'entrega'
+                      ? 'bg-[#eff4ff] border-[#0051d5] text-[#0051d5]'
+                      : 'bg-white border-[#e5eeff] text-[#45464d] hover:bg-[#f8f9ff]'
+                  }`}
+                >
+                  <Truck className="w-4 h-4" />
+                  <span>Entrega (REM)</span>
+                </button>
+              )}
 
-              <button
-                type="button"
-                onClick={() => setType('venta_cierre')}
-                className={`p-2.5 rounded-lg text-xs font-semibold flex flex-col items-center gap-1 border transition-all cursor-pointer ${
-                  type === 'venta_cierre'
-                    ? 'bg-[#ecfdf5] border-[#069669] text-[#069669]'
-                    : 'bg-white border-[#e5eeff] text-[#45464d] hover:bg-[#f8f9ff]'
-                }`}
-              >
-                <CheckCircle className="w-4 h-4" />
-                <span>Venta (LIQ)</span>
-              </button>
+              {(!permissions || permissions.canEmitRemissionSale) && (
+                <button
+                  type="button"
+                  onClick={() => setType('venta_cierre')}
+                  className={`p-2.5 rounded-lg text-xs font-semibold flex flex-col items-center gap-1 border transition-all cursor-pointer ${
+                    type === 'venta_cierre'
+                      ? 'bg-[#ecfdf5] border-[#069669] text-[#069669]'
+                      : 'bg-white border-[#e5eeff] text-[#45464d] hover:bg-[#f8f9ff]'
+                  }`}
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Venta (LIQ)</span>
+                </button>
+              )}
 
-              <button
-                type="button"
-                onClick={() => setType('devolucion_merma')}
-                className={`p-2.5 rounded-lg text-xs font-semibold flex flex-col items-center gap-1 border transition-all cursor-pointer ${
-                  type === 'devolucion_merma'
-                    ? 'bg-[#ffdad6]/60 border-[#ba1a1a] text-[#ba1a1a]'
-                    : 'bg-white border-[#e5eeff] text-[#45464d] hover:bg-[#f8f9ff]'
-                }`}
-              >
-                <PackageMinus className="w-4 h-4" />
-                <span>Merma (MER)</span>
-              </button>
+              {(!permissions || permissions.canReturnToCentral) && (
+                <button
+                  type="button"
+                  onClick={() => setType('devolucion_merma')}
+                  className={`p-2.5 rounded-lg text-xs font-semibold flex flex-col items-center gap-1 border transition-all cursor-pointer ${
+                    type === 'devolucion_merma'
+                      ? 'bg-[#ffdad6]/60 border-[#ba1a1a] text-[#ba1a1a]'
+                      : 'bg-white border-[#e5eeff] text-[#45464d] hover:bg-[#f8f9ff]'
+                  }`}
+                >
+                  <PackageMinus className="w-4 h-4" />
+                  <span>Merma/Devolución</span>
+                </button>
+              )}
             </div>
           </div>
 

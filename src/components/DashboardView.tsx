@@ -20,16 +20,20 @@ import {
   Clock,
   ExternalLink,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Undo2
 } from 'lucide-react';
 import { Client, Movement } from '../types';
+import { UserPermissions } from '../utils/permissions';
 
 interface DashboardViewProps {
   clients: Client[];
   movements: Movement[];
+  permissions: UserPermissions;
   onOpenReconcile: (client?: Client) => void;
   onOpenSaleReport: (client?: Client) => void;
   onOpenDelivery: (client?: Client) => void;
+  onOpenReturn?: (client?: Client) => void;
   onOpenClientDetail: (client: Client) => void;
   onNavigateToMovements: () => void;
   onNavigateToClients: (filterStatus?: string) => void;
@@ -38,9 +42,11 @@ interface DashboardViewProps {
 export const DashboardView: React.FC<DashboardViewProps> = ({
   clients,
   movements,
+  permissions,
   onOpenReconcile,
   onOpenSaleReport,
   onOpenDelivery,
+  onOpenReturn,
   onOpenClientDetail,
   onNavigateToMovements,
   onNavigateToClients,
@@ -130,35 +136,53 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Direct Quick Actions */}
         <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-          <button
-            id="btn-hoja-conciliacion"
-            type="button"
-            onClick={() => onOpenReconcile()}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-white text-[#0b1c30] border border-[#e5eeff] shadow-xs hover:bg-[#eff4ff] hover:border-[#0051d5]/30 transition-all font-medium text-xs sm:text-sm cursor-pointer"
-          >
-            <FileSpreadsheet className="w-4 h-4 text-[#0051d5]" />
-            <span>Hoja de Conciliación</span>
-          </button>
+          {permissions.canReconcileAudit && (
+            <button
+              id="btn-hoja-conciliacion"
+              type="button"
+              onClick={() => onOpenReconcile()}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-white text-[#0b1c30] border border-[#e5eeff] shadow-xs hover:bg-[#eff4ff] hover:border-[#0051d5]/30 transition-all font-medium text-xs sm:text-sm cursor-pointer"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-[#0051d5]" />
+              <span>Hoja de Conciliación</span>
+            </button>
+          )}
 
-          <button
-            id="btn-registrar-venta-cierre"
-            type="button"
-            onClick={() => onOpenSaleReport()}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-white text-[#0b1c30] border border-[#e5eeff] shadow-xs hover:bg-[#eff4ff] hover:border-[#069669]/30 transition-all font-medium text-xs sm:text-sm cursor-pointer"
-          >
-            <Receipt className="w-4 h-4 text-[#069669]" />
-            <span>Registrar Venta/Cierre</span>
-          </button>
+          {permissions.canEmitRemissionSale && (
+            <button
+              id="btn-registrar-venta-cierre"
+              type="button"
+              onClick={() => onOpenSaleReport()}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-white text-[#0b1c30] border border-[#e5eeff] shadow-xs hover:bg-[#eff4ff] hover:border-[#069669]/30 transition-all font-medium text-xs sm:text-sm cursor-pointer"
+            >
+              <Receipt className="w-4 h-4 text-[#069669]" />
+              <span>Nota de Remisión (Venta)</span>
+            </button>
+          )}
 
-          <button
-            id="btn-registrar-entrega-cliente"
-            type="button"
-            onClick={() => onOpenDelivery()}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#0051d5] text-white shadow-xs hover:bg-[#003ea8] transition-all font-semibold text-xs sm:text-sm cursor-pointer active:scale-98"
-          >
-            <Truck className="w-4 h-4 text-white" />
-            <span>Registrar Entrega a Cliente</span>
-          </button>
+          {permissions.canReturnToCentral && onOpenReturn && (
+            <button
+              id="btn-registrar-devolucion"
+              type="button"
+              onClick={() => onOpenReturn()}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-white text-[#ba1a1a] border border-[#ffdcd9] shadow-xs hover:bg-[#fff1f0] transition-all font-medium text-xs sm:text-sm cursor-pointer"
+            >
+              <Undo2 className="w-4 h-4 text-[#ba1a1a]" />
+              <span>Devolución a Central</span>
+            </button>
+          )}
+
+          {permissions.canDispatchConsignment && (
+            <button
+              id="btn-registrar-entrega-cliente"
+              type="button"
+              onClick={() => onOpenDelivery()}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#0051d5] text-white shadow-xs hover:bg-[#003ea8] transition-all font-semibold text-xs sm:text-sm cursor-pointer active:scale-98"
+            >
+              <Truck className="w-4 h-4 text-white" />
+              <span>Despacho a Consignación</span>
+            </button>
+          )}
         </div>
       </div>
 

@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Hide UI elements not meant for physical paper */
+  #app-sidebar,
+  #app-header,
+  #mobile-sidebar-backdrop,
+  #global-toast-notification,
+  button,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Expand voucher content to full page */
+  #printable-voucher-document {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .lg\:pl-64 {
+    padding-left: 0 !important;
+  }
+}
